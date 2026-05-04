@@ -53,5 +53,5 @@ const navItems = [
     }
   }
   window.addEventListener('scroll', updateNav, { passive: true });
-  updateNav();
+  requestIdleCallback ? requestIdleCallback(updateNav) : setTimeout(updateNav, 1);
 </script>

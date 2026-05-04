@@ -2,6 +2,7 @@
 import BaseLayout from './BaseLayout.astro';
 import Comments from '../components/Comments.astro';
 import GiscusComments from '../components/GiscusComments.astro';
+import '../styles/article.css';
 
 export interface Props {
   title: string;
@@ -214,6 +215,9 @@ const formattedDate = new Date(date).toLocaleDateString('zh-CN', {
     headings.forEach(h => observer.observe(h));
   }
 
-  autoSpace();
-  buildTOC();
+  const schedule = (fn: () => void) => {
+    requestIdleCallback ? requestIdleCallback(fn, { timeout: 200 }) : setTimeout(fn, 1);
+  };
+  schedule(autoSpace);
+  schedule(buildTOC);
 </script>

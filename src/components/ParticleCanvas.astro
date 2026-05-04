@@ -1,5 +1,5 @@
 ---
-// 5000 particles — ImageData direct pixel rendering for performance
+// Lightweight particle background — 200 particles, canvas arc rendering
 ---
 <canvas id="particle-canvas" class="absolute inset-0 pointer-events-none z-0" style="opacity:0;transition:opacity 1.5s ease-in"></canvas>
 
@@ -7,122 +7,103 @@
   const canvas = document.getElementById('particle-canvas') as HTMLCanvasElement;
   const ctx = canvas.getContext('2d')!;
   let animId = 0;
+  let running = false;
 
-  const N = 1000;
-  const MOUSE_RADIUS = 280;
-  const MOUSE_FORCE = 0.05;
+  const N = 200;
+  const MOUSE_RADIUS = 260;
+  const MOUSE_FORCE = 0.04;
 
-  // Pre-multiplied RGBA color values (r,g,b as 0-255)
-  const COLORS_RGB = [
-    [8,145,178], [8,145,178], [8,145,178],
-    [229,92,74], [212,149,50],
+  type Particle = {
+    x: number; y: number; bx: number; by: number;
+    vx: number; vy: number; r: number; alpha: number;
+    color: string;
+  };
+  const particles: Particle[] = [];
+  const colors = [
+    'rgba(8,145,178,__A__)',
+    'rgba(8,145,178,__A__)',
+    'rgba(8,145,178,__A__)',
+    'rgba(229,92,74,__A__)',
+    'rgba(212,149,50,__A__)',
   ];
-
-  let px: Float32Array, py: Float32Array, bx: Float32Array, by: Float32Array;
-  let vx: Float32Array, vy: Float32Array;
-  let sz: Float32Array, op: Float32Array, cl: Uint8Array;
 
   let mouse = { x: -1000, y: -1000 };
   let w = 0, h = 0;
-  let frameCount = 0, initialized = false;
-  let imageData: ImageData, data: Uint8ClampedArray;
+  let initialized = false;
+  let startTime = 0;
 
   function edgeBiased() {
     const r = Math.random();
     return r < 0.5 ? r * r * 2 : 1 - (1 - r) * (1 - r) * 2;
   }
 
+  function init() {
+    particles.length = 0;
+    for (let i = 0; i < N; i++) {
+      particles.push({
+        x: edgeBiased() * w, y: edgeBiased() * h,
+        bx: edgeBiased() * w, by: edgeBiased() * h,
+        vx: 0, vy: 0,
+        r: Math.random() * 2 + 1.2,
+        alpha: Math.random() * 0.22 + 0.05,
+        color: colors[Math.floor(Math.random() * colors.length)],
+      });
+    }
+  }
+
   function resize() {
     const rect = canvas.parentElement!.getBoundingClientRect();
     w = canvas.width = rect.width;
     h = canvas.height = rect.height;
-    imageData = ctx.createImageData(w, h);
-    data = imageData.data;
     init();
   }
 
-  function init() {
-    px = new Float32Array(N); py = new Float32Array(N);
-    bx = new Float32Array(N); by = new Float32Array(N);
-    vx = new Float32Array(N); vy = new Float32Array(N);
-    sz = new Float32Array(N); op = new Float32Array(N);
-    cl = new Uint8Array(N);
-    for (let i = 0; i < N; i++) {
-      px[i] = bx[i] = edgeBiased() * w;
-      py[i] = by[i] = edgeBiased() * h;
-      sz[i] = Math.random() * 1.5 + 0.5;
-      cl[i] = Math.floor(Math.random() * COLORS_RGB.length);
-      op[i] = Math.random() * 0.25 + 0.06;
-    }
-  }
+  function draw(ts: number) {
+    if (!running) { animId = requestAnimationFrame(draw); return; }
+    if (!startTime) startTime = ts;
+    const elapsed = ts - startTime;
 
-  function draw() {
-    // Clear buffer
-    data.fill(0);
-    frameCount++;
+    ctx.clearRect(0, 0, w, h);
 
     const mr = MOUSE_RADIUS, mf = MOUSE_FORCE;
     const mx = mouse.x, my = mouse.y;
-    const dw = w | 0, dh = h | 0;
 
-    // Physics
     for (let i = 0; i < N; i++) {
+      const p = particles[i];
+
       if (initialized) {
-        const dx = px[i] - mx, dy = py[i] - my;
+        const dx = p.x - mx, dy = p.y - my;
         const dist = Math.sqrt(dx * dx + dy * dy);
         if (dist < mr && dist > 0) {
           const f = (mr - dist) / mr * mf;
-          vx[i] += (dx / dist) * f;
-          vy[i] += (dy / dist) * f;
+          p.vx += (dx / dist) * f;
+          p.vy += (dy / dist) * f;
         }
       }
+
       const ps = initialized ? 0.0005 : 0.008;
-      vx[i] += (bx[i] - px[i]) * ps;
-      vy[i] += (by[i] - py[i]) * ps;
-      vx[i] *= 0.97; vy[i] *= 0.97;
-      px[i] += vx[i]; py[i] += vy[i];
+      p.vx += (p.bx - p.x) * ps;
+      p.vy += (p.by - p.y) * ps;
+      p.vx *= 0.97; p.vy *= 0.97;
+      p.x += p.vx; p.y += p.vy;
+
+      // Render using GPU-accelerated arc fill
+      const alpha = initialized ? p.alpha : p.alpha * Math.min(elapsed / 1800, 1);
+      ctx.fillStyle = p.color.replace('__A__', String(alpha));
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fill();
     }
 
-    // Render: write pixels directly into ImageData
-    for (let i = 0; i < N; i++) {
-      const cx = px[i] | 0, cy = py[i] | 0;
-      const r = Math.ceil(sz[i]);
-      const color = COLORS_RGB[cl[i]];
-      const alpha = initialized ? op[i] : op[i] * Math.min(frameCount / 60, 1);
-      const a = (alpha * 255) | 0;
-      const cr = color[0], cg = color[1], cb = color[2];
-
-      // Draw filled circle into pixel buffer
-      for (let dy = -r; dy <= r; dy++) {
-        const y = cy + dy;
-        if (y < 0 || y >= dh) continue;
-        for (let dx = -r; dx <= r; dx++) {
-          const x = cx + dx;
-          if (x < 0 || x >= dw) continue;
-          if (dx * dx + dy * dy > r * r) continue;
-          const idx = (y * dw + x) * 4;
-          // Alpha blend
-          const srcA = a;
-          const dstA = data[idx + 3];
-          if (dstA === 0) {
-            data[idx] = cr; data[idx + 1] = cg; data[idx + 2] = cb; data[idx + 3] = srcA;
-          } else {
-            const outA = srcA + dstA - ((srcA * dstA) / 255) | 0;
-            if (outA === 0) continue;
-            data[idx] = (cr * srcA + data[idx] * dstA * (255 - srcA) / 255) / outA | 0;
-            data[idx + 1] = (cg * srcA + data[idx + 1] * dstA * (255 - srcA) / 255) / outA | 0;
-            data[idx + 2] = (cb * srcA + data[idx + 2] * dstA * (255 - srcA) / 255) / outA | 0;
-            data[idx + 3] = outA;
-          }
-        }
-      }
-    }
-
-    ctx.putImageData(imageData, 0, 0);
-
-    if (!initialized && frameCount > 60) initialized = true;
+    if (!initialized && elapsed > 1800) initialized = true;
     animId = requestAnimationFrame(draw);
   }
+
+  // IntersectionObserver to pause when off-screen
+  const observer = new IntersectionObserver((entries) => {
+    running = entries[0].isIntersecting;
+  }, { threshold: 0 });
+  observer.observe(canvas.parentElement!);
 
   setTimeout(() => { canvas.style.opacity = '1'; }, 100);
 

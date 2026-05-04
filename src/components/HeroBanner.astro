@@ -19,7 +19,10 @@ import ParticleCanvas from './ParticleCanvas.astro';
             src="https://static.zdfmc.net/zdfmc_net/wp-content/uploads/2024/05/zdfmc_net_banner1-scaled-e1715967952746.jpg"
             alt="zdfmc.net 看板娘"
             class="w-full transition-transform duration-700 ease-out"
-            loading="eager"
+            width="800"
+            height="800"
+            fetchpriority="high"
+            decoding="sync"
           />
         </div>
         <p class="text-gray-300 text-xs mt-4">ill. by Patchouli @ zdfmc.net</p>
@@ -57,6 +60,7 @@ import ParticleCanvas from './ParticleCanvas.astro';
 </section>
 
 <script>
+  function initHero() {
   // Cursor blink
   const cursor = document.getElementById('tw-cursor')!;
   let blink = true;
@@ -81,5 +85,7 @@ import ParticleCanvas from './ParticleCanvas.astro';
     requestAnimationFrame(animateParallax);
   }
   requestAnimationFrame(animateParallax);
+  }
+  requestIdleCallback ? requestIdleCallback(initHero) : setTimeout(initHero, 1);
 </script>
 
