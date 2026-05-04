@@ -5,6 +5,9 @@ dist/
 *.log
 public/wp-content/
 
+# local backups
+attachment/
+
 # wrangler files
 .wrangler
 .dev.vars*

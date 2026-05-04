@@ -15,7 +15,7 @@
 2. **缩略图** — `thumbnails` 映射（`post_id → url`）
 3. **附件表** — `attachments` 映射（`attachment_id → url`）
 4. **源码硬编码** — HeroBanner 看板娘、TeamGrid 头像、Nav logo 等
-5. **残留绝对路径** — 部分内容中有 `/www/wwwroot/...` 服务器路径
+5. **残留绝对路径** — 部分内容中有服务器绝对路径
 
 ---
 
@@ -103,7 +103,7 @@ WordPress 为每张原图生成了多尺寸缩略图（150x150, 300xX, 768xX, 10
 # 全局替换以下模式 → https://assets.zdfmc.net/wp-content/uploads/...
 # - /wp-content/uploads/...
 # - https://zdfmc.net/wp-content/uploads/...
-# - /www/wwwroot/zdfmc.net/wp-content/uploads/...
+# - /var/www/zdfmc.net/wp-content/uploads/...
 ```
 
 ### Step 5: 移除本地图片
