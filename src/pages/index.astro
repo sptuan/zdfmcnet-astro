@@ -13,6 +13,7 @@ const allPosts = postsData.posts
     date: p.date,
     excerpt: p.excerpt || '',
     categories: p.categories,
+    slug: p.slug,
     thumbnail: (postsData.thumbnails as any)[String(p.id)] || undefined,
   }));
 
@@ -44,6 +45,7 @@ const newsPosts = allPosts.filter((p: any) =>
             excerpt={post.excerpt}
             categories={post.categories?.map((c: any) => c.name)}
             thumbnail={post.thumbnail}
+            slug={post.slug}
           />
         ))}
       </div>

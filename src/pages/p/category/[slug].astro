@@ -43,6 +43,7 @@ const pagePosts = categoryPosts.slice(0, pageSize);
           excerpt={post.excerpt}
           categories={post.categories?.map((c: any) => c.name)}
           thumbnail={(postsData.thumbnails as any)[String(post.id)] || undefined}
+          slug={post.slug}
         />
       ))}
     </div>

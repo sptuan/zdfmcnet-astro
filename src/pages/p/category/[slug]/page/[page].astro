@@ -53,6 +53,7 @@ const totalPages = Math.ceil(categoryPosts.length / pageSize) || 1;
           excerpt={post.excerpt}
           categories={post.categories?.map((c: any) => c.name)}
           thumbnail={(postsData.thumbnails as any)[String(post.id)] || undefined}
+          slug={post.slug}
         />
       ))}
     </div>

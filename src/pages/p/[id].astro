@@ -3,12 +3,40 @@ import PostLayout from '../../layouts/PostLayout.astro';
 import postsData from '../../data/wordpress_data.json';
 
 export function getStaticPaths() {
-  return postsData.posts.map((post: any) => ({
-    params: { id: String(post.id) },
-    props: { post },
-  }));
+  const paths: { params: { id: string }; props: { post: any } }[] = [];
+
+  for (const post of (postsData.posts as any[])) {
+    const numericId = String(post.id);
+    const rawSlug = post.slug || '';
+
+    // Only use slug-based paths for posts with clean ASCII slugs (new articles).
+    // Old WordPress posts have URL-encoded Chinese slugs — keep them on numeric IDs only.
+    const hasCleanSlug = /^[a-zA-Z0-9-]*[a-zA-Z][a-zA-Z0-9-]*$/.test(rawSlug);
+
+    if (hasCleanSlug && rawSlug !== numericId) {
+      // New article: slug as primary URL
+      paths.push({
+        params: { id: rawSlug },
+        props: { post },
+      });
+      // Also keep numeric ID as alias
+      paths.push({
+        params: { id: numericId },
+        props: { post },
+      });
+    } else {
+      // Old WordPress article: numeric ID only
+      paths.push({
+        params: { id: numericId },
+        props: { post },
+      });
+    }
+  }
+
+  return paths;
 }
 
+const { id } = Astro.params;
 const { post } = Astro.props;
 const thumbnail = (postsData.thumbnails as any)[String(post.id)] || undefined;
 ---

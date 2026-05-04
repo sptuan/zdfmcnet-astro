@@ -10,7 +10,7 @@
     "deploy": "npm run build && wrangler deploy"
   },
   "dependencies": {
-    "@astrojs/cloudflare": "11",
+    "@astrojs/cloudflare": "^11.2.0",
     "@astrojs/rss": "^4.0.0",
     "@astrojs/sitemap": "^3.0.0",
     "@astrojs/tailwind": "^5.1.0",

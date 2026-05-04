@@ -6,9 +6,13 @@ export interface Props {
   excerpt?: string;
   categories?: string[];
   thumbnail?: string;
+  slug?: string;
 }
 
-const { id, title, date, excerpt, categories, thumbnail } = Astro.props;
+const { id, title, date, excerpt, categories, thumbnail, slug } = Astro.props;
+
+const hasCleanSlug = slug && /^[a-zA-Z0-9-]*[a-zA-Z][a-zA-Z0-9-]*$/.test(slug);
+const postUrl = hasCleanSlug ? `/p/${slug}` : `/p/${id}`;
 
 const formattedDate = new Date(date).toLocaleDateString('zh-CN', {
   year: 'numeric', month: 'long', day: 'numeric'
@@ -16,7 +20,7 @@ const formattedDate = new Date(date).toLocaleDateString('zh-CN', {
 ---
 
 <article class="glass-card overflow-hidden group">
-  <a href={`/p/${id}`} class="block p-5 md:p-6">
+  <a href={postUrl} class="block p-5 md:p-6">
     {thumbnail && (
       <div class="mb-4 -mx-5 -mt-5 md:-mx-6 md:-mt-6 overflow-hidden rounded-t-2xl">
         <img src={thumbnail} alt={title} class="w-full h-40 object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />
