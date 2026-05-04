@@ -10,6 +10,7 @@ export async function GET(context: any) {
     title: 'zdfmc.net - 周大服Minecraft社群',
     description: '周大服Minecraft社群 - 原为几个高考结束无所事事的逗比运行的Minecraft服务器',
     site: context.site,
+    trailingSlash: false,
     items: posts.map((post: any) => ({
       title: post.title,
       description: post.excerpt || '',

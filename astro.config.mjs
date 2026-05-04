@@ -13,7 +13,7 @@ export default defineConfig({
   output: "hybrid",
 
   build: {
-    format: 'directory',
+    format: 'file',
   },
 
   trailingSlash: 'never',
