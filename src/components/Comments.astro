@@ -1,0 +1,33 @@
+---
+import commentsData from '../data/wordpress_data.json';
+
+export interface Props {
+  postId: number;
+}
+
+const { postId } = Astro.props;
+const comments: any[] = (commentsData.comments as any)[String(postId)] || [];
+---
+
+{comments.length > 0 && (
+  <section class="mt-16 pt-10 border-t border-gray-200">
+    <h2 class="text-xl font-bold text-text-primary mb-6">
+      评论 ({comments.length})
+    </h2>
+    <div class="space-y-6">
+      {comments.map((c: any) => (
+        <div class="glass-card p-5" id={`comment-${c.id}`}>
+          <div class="flex items-center gap-2 mb-2">
+            <strong class="text-text-primary text-sm">{c.author || '匿名'}</strong>
+            <span class="text-text-muted text-xs">
+              {new Date(c.date).toLocaleDateString('zh-CN')}
+            </span>
+          </div>
+          <div class="text-text-secondary text-sm leading-relaxed">
+            {c.content}
+          </div>
+        </div>
+      ))}
+    </div>
+  </section>
+)}

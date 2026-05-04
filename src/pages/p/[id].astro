@@ -1,0 +1,25 @@
+---
+import PostLayout from '../../layouts/PostLayout.astro';
+import postsData from '../../data/wordpress_data.json';
+
+export function getStaticPaths() {
+  return postsData.posts.map((post: any) => ({
+    params: { id: String(post.id) },
+    props: { post },
+  }));
+}
+
+const { post } = Astro.props;
+const thumbnail = (postsData.thumbnails as any)[String(post.id)] || undefined;
+---
+
+<PostLayout
+  title={post.title}
+  date={post.date}
+  categories={post.categories?.map((c: any) => c.name)}
+  tags={post.tags?.map((t: any) => t.name)}
+  thumbnail={thumbnail}
+  postId={post.id}
+>
+  <Fragment set:html={post.content} />
+</PostLayout>

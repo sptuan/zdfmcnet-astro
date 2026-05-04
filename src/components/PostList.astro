@@ -1,0 +1,46 @@
+---
+import PostCard from './PostCard.astro';
+
+interface Post {
+  id: number;
+  title: string;
+  date: string;
+  excerpt?: string;
+  categories?: {name: string; slug: string}[];
+  thumbnail?: string;
+}
+
+export interface Props {
+  posts: Post[];
+  showMoreLink?: string;
+  showMoreText?: string;
+}
+
+const { posts, showMoreLink, showMoreText } = Astro.props;
+---
+
+<section class="section-padding">
+  <div class="container-main">
+    <div class="flex items-center justify-between mb-10">
+      <h2 class="text-2xl md:text-3xl font-display font-bold text-white">新鲜事儿</h2>
+      {showMoreLink && (
+        <a href={showMoreLink} class="text-sm text-accent hover:text-accent-warm transition-colors font-medium">
+          {showMoreText || '查看更多'} &rarr;
+        </a>
+      )}
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+      {posts.map(post => (
+        <PostCard
+          id={post.id}
+          title={post.title}
+          date={post.date}
+          excerpt={post.excerpt}
+          categories={post.categories?.map(c => c.name)}
+          thumbnail={post.thumbnail}
+        />
+      ))}
+    </div>
+  </div>
+</section>

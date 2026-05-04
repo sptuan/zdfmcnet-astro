@@ -1,0 +1,62 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import HeroBanner from '../components/HeroBanner.astro';
+import TeamGrid from '../components/TeamGrid.astro';
+import PostCard from '../components/PostCard.astro';
+import postsData from '../data/wordpress_data.json';
+
+const allPosts = postsData.posts
+  .sort((a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime())
+  .map((p: any) => ({
+    id: p.id,
+    title: p.title,
+    date: p.date,
+    excerpt: p.excerpt || '',
+    categories: p.categories,
+    thumbnail: (postsData.thumbnails as any)[String(p.id)] || undefined,
+  }));
+
+const newsPosts = allPosts.filter((p: any) =>
+  p.categories?.some((c: any) => c.slug === 'news')
+).slice(0, 30);
+---
+
+<BaseLayout>
+  <HeroBanner />
+
+  <div class="bg-surface">
+  <!-- News Section -->
+  <section id="news" class="section-padding">
+    <div class="container-main">
+      <div class="flex items-center justify-between mb-10">
+        <h2 class="text-2xl md:text-3xl font-display font-bold text-text-primary">新鲜事儿</h2>
+        <a href="/p/category/news" class="text-sm text-accent hover:text-accent-warm transition-colors font-medium">
+          查看更多 &rarr;
+        </a>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+        {newsPosts.map((post: any) => (
+          <PostCard
+            id={post.id}
+            title={post.title}
+            date={post.date}
+            excerpt={post.excerpt}
+            categories={post.categories?.map((c: any) => c.name)}
+            thumbnail={post.thumbnail}
+          />
+        ))}
+      </div>
+
+      <div class="mt-10 text-center">
+        <a href="/p/category/news" class="inline-flex items-center gap-2 px-6 py-3 rounded-full border border-gray-200 text-sm font-medium text-text-secondary hover:text-accent hover:border-accent/30 transition-colors">
+          查看所有新鲜事儿
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <TeamGrid />
+  </div>
+</BaseLayout>

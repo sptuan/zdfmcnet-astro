@@ -1,0 +1,81 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import PostCard from '../../../components/PostCard.astro';
+import catIndex from '../../../data/category_index.json';
+import postsData from '../../../data/wordpress_data.json';
+
+export function getStaticPaths() {
+  return Object.entries(catIndex).map(([slug, cat]: [string, any]) => ({
+    params: { slug },
+    props: { slug, cat },
+  }));
+}
+
+const { slug, cat } = Astro.props;
+
+// Resolve post IDs to post data
+const categoryPosts = (cat.posts || [])
+  .map((pid: number) => postsData.posts.find((p: any) => p.id === pid))
+  .filter(Boolean)
+  .sort((a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime());
+
+// Paginate: 12 per page (this is page 1)
+const pageSize = 12;
+const totalPages = Math.ceil(categoryPosts.length / pageSize) || 1;
+const pagePosts = categoryPosts.slice(0, pageSize);
+---
+
+<BaseLayout title={`${cat.name} - zdfmc.net`}>
+  <div class="container-main py-12 md:py-20">
+    <header class="mb-12">
+      <h1 class="text-3xl md:text-4xl font-display font-bold text-text-primary mb-2">
+        {cat.name}
+      </h1>
+      <p class="text-text-muted">{categoryPosts.length} 篇文章</p>
+    </header>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+      {pagePosts.map((post: any) => (
+        <PostCard
+          id={post.id}
+          title={post.title}
+          date={post.date}
+          excerpt={post.excerpt}
+          categories={post.categories?.map((c: any) => c.name)}
+          thumbnail={(postsData.thumbnails as any)[String(post.id)] || undefined}
+        />
+      ))}
+    </div>
+
+    {totalPages > 1 && (
+      <nav class="mt-12 flex items-center justify-center gap-2">
+        {Array.from({ length: Math.min(totalPages, 10) }, (_, i) => i + 1).map(page => (
+          <a
+            href={page === 1 ? `/p/category/${slug}` : `/p/category/${slug}/page/${page}`}
+            class={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+              page === 1
+                ? 'bg-accent text-surface'
+                : 'text-text-secondary hover:text-accent hover:bg-surface-lighter'
+            }`}
+          >
+            {page}
+          </a>
+        ))}
+        {totalPages > 10 && (
+          <a
+            href={`/p/category/${slug}/page/${totalPages}`}
+            class="px-4 py-2 rounded-lg text-sm text-text-muted"
+          >
+            ... {totalPages}
+          </a>
+        )}
+        <a
+          href={`/p/category/${slug}/page/2`}
+          class="px-4 py-2 rounded-lg text-sm text-text-secondary hover:text-accent hover:bg-surface-lighter transition-colors"
+        >
+          下一页 &rarr;
+        </a>
+      </nav>
+    )}
+  </div>
+</BaseLayout>

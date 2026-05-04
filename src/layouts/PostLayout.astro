@@ -1,0 +1,70 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import Comments from '../components/Comments.astro';
+
+export interface Props {
+  title: string;
+  date: string;
+  categories?: string[];
+  tags?: string[];
+  thumbnail?: string;
+  postId: number;
+}
+
+const { title, date, categories, tags, thumbnail, postId } = Astro.props;
+
+const formattedDate = new Date(date).toLocaleDateString('zh-CN', {
+  year: 'numeric', month: 'long', day: 'numeric'
+});
+---
+
+<BaseLayout title={title}>
+  <article class="container-main py-12 md:py-20">
+    <header class="mb-10">
+      {categories && categories.length > 0 && (
+        <div class="flex flex-wrap gap-2 mb-4">
+          {categories.map(cat => (
+            <a href={`/p/category/${cat}`}
+               class="text-xs font-medium px-3 py-1 rounded-full bg-accent/10 text-accent hover:bg-accent/20 transition-colors">
+              {cat}
+            </a>
+          ))}
+        </div>
+      )}
+      <h1 class="text-3xl md:text-4xl lg:text-5xl font-display font-bold text-text-primary leading-tight">
+        {title}
+      </h1>
+      <time datetime={date} class="block mt-4 text-text-muted text-sm">
+        {formattedDate}
+      </time>
+    </header>
+
+    {thumbnail && (
+      <figure class="mb-10 -mx-4 md:mx-0">
+        <img src={thumbnail} alt={title} class="w-full rounded-xl shadow-md" loading="lazy" />
+      </figure>
+    )}
+
+    <div class="prose prose-lg max-w-none
+      prose-headings:text-text-primary prose-headings:font-display
+      prose-a:text-accent prose-a:no-underline hover:prose-a:text-accent-warm
+      prose-img:rounded-xl prose-img:shadow-sm
+      prose-blockquote:border-accent prose-blockquote:text-text-secondary
+      prose-code:text-accent prose-code:bg-surface-lighter prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded
+      prose-pre:bg-surface-lighter prose-pre:border prose-pre:border-gray-200
+      prose-hr:border-gray-200
+    ">
+      <slot />
+    </div>
+
+    {tags && tags.length > 0 && (
+      <div class="mt-12 flex flex-wrap gap-2">
+        {tags.map(tag => (
+          <span class="text-xs px-2 py-1 rounded bg-surface-lighter text-text-muted">#{tag}</span>
+        ))}
+      </div>
+    )}
+
+    <Comments postId={postId} />
+  </article>
+</BaseLayout>

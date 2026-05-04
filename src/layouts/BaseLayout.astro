@@ -1,0 +1,35 @@
+---
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+import '../styles/global.css';
+
+export interface Props {
+  title?: string;
+  description?: string;
+  image?: string;
+}
+const { title, description, image } = Astro.props;
+---
+
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{title ? `${title} - zdfmc.net` : 'zdfmc.net - 周大服Minecraft社群'}</title>
+  <meta name="description" content={description || '周大服Minecraft社群 - 原为几个高考结束无所事事的逗比运行的Minecraft服务器，现已转为性趣很广泛的综合性研究机构。'} />
+  <meta property="og:title" content={title || 'zdfmc.net - 周大服Minecraft社群'} />
+  <meta property="og:description" content={description || '周大服Minecraft社群'} />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="zdfmc.net" />
+  {image && <meta property="og:image" content={image} />}
+  <link rel="alternate" type="application/rss+xml" title="zdfmc.net RSS Feed" href="/feed" />
+</head>
+<body class="min-h-screen flex flex-col bg-white">
+  <Nav />
+  <main class="flex-1">
+    <slot />
+  </main>
+  <Footer />
+</body>
+</html>

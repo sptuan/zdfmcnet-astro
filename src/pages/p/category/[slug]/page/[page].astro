@@ -1,0 +1,91 @@
+---
+import BaseLayout from '../../../../../layouts/BaseLayout.astro';
+import PostCard from '../../../../../components/PostCard.astro';
+import catIndex from '../../../../../data/category_index.json';
+import postsData from '../../../../../data/wordpress_data.json';
+
+export function getStaticPaths() {
+  const paths: any[] = [];
+  const pageSize = 12;
+
+  for (const [slug, cat] of Object.entries(catIndex) as [string, any][]) {
+    const totalPosts = (cat.posts || []).length;
+    const totalPages = Math.ceil(totalPosts / pageSize);
+    for (let page = 2; page <= totalPages; page++) {
+      paths.push({
+        params: { slug, page: String(page) },
+        props: { slug, cat, page },
+      });
+    }
+  }
+
+  return paths;
+}
+
+const { slug, cat, page } = Astro.props;
+const pageSize = 12;
+
+const categoryPosts = (cat.posts || [])
+  .map((pid: number) => postsData.posts.find((p: any) => p.id === pid))
+  .filter(Boolean)
+  .sort((a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime());
+
+const start = (page - 1) * pageSize;
+const pagePosts = categoryPosts.slice(start, start + pageSize);
+const totalPages = Math.ceil(categoryPosts.length / pageSize) || 1;
+---
+
+<BaseLayout title={`${cat.name} - 第${page}页 - zdfmc.net`}>
+  <div class="container-main py-12 md:py-20">
+    <header class="mb-12">
+      <h1 class="text-3xl md:text-4xl font-display font-bold text-text-primary mb-2">
+        {cat.name}
+      </h1>
+      <p class="text-text-muted">第 {page} 页 / 共 {totalPages} 页</p>
+    </header>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+      {pagePosts.map((post: any) => (
+        <PostCard
+          id={post.id}
+          title={post.title}
+          date={post.date}
+          excerpt={post.excerpt}
+          categories={post.categories?.map((c: any) => c.name)}
+          thumbnail={(postsData.thumbnails as any)[String(post.id)] || undefined}
+        />
+      ))}
+    </div>
+
+    <nav class="mt-12 flex items-center justify-center gap-2 flex-wrap">
+      {page > 1 && (
+        <a
+          href={page - 1 === 1 ? `/p/category/${slug}` : `/p/category/${slug}/page/${page - 1}`}
+          class="px-4 py-2 rounded-lg text-sm text-text-secondary hover:text-accent hover:bg-surface-lighter transition-colors"
+        >
+          &larr; 上一页
+        </a>
+      )}
+      {Array.from({ length: Math.min(totalPages, 10) }, (_, i) => i + 1).map(p => (
+        <a
+          href={p === 1 ? `/p/category/${slug}` : `/p/category/${slug}/page/${p}`}
+          class={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+            p === page
+              ? 'bg-accent text-surface'
+              : 'text-text-secondary hover:text-accent hover:bg-surface-lighter'
+          }`}
+        >
+          {p}
+        </a>
+      ))}
+      {page < totalPages && (
+        <a
+          href={`/p/category/${slug}/page/${page + 1}`}
+          class="px-4 py-2 rounded-lg text-sm text-text-secondary hover:text-accent hover:bg-surface-lighter transition-colors"
+        >
+          下一页 &rarr;
+        </a>
+      )}
+    </nav>
+  </div>
+</BaseLayout>

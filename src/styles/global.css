@@ -1,0 +1,35 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700;900&family=Noto+Serif+SC:wght@400;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    @apply text-text-primary font-sans antialiased;
+    line-height: 1.7;
+  }
+  h1, h2, h3, h4 { @apply font-display font-bold tracking-tight; }
+  a { @apply text-accent transition-colors duration-200; }
+  a:hover { @apply text-accent-warm; }
+}
+
+@layer components {
+  .container-main {
+    @apply max-w-6xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+  .glass-card {
+    @apply bg-surface-light border border-[#e8e4dd] rounded-2xl shadow-sm hover:shadow-md transition-shadow duration-300;
+  }
+  .section-padding {
+    @apply py-16 sm:py-24;
+  }
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-accent to-accent-warm;
+  }
+  .nav-link {
+    @apply text-text-secondary hover:text-accent transition-colors duration-200 text-sm font-medium tracking-wide;
+  }
+}

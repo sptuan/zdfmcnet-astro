@@ -1,0 +1,85 @@
+---
+import ParticleCanvas from './ParticleCanvas.astro';
+---
+
+<section class="relative overflow-hidden bg-white" id="hero-section">
+  <ParticleCanvas />
+
+  <div class="absolute top-0 right-0 w-[600px] h-[600px] rounded-full bg-accent/[0.03] blur-3xl pointer-events-none" />
+  <div class="absolute bottom-0 left-0 w-[400px] h-[400px] rounded-full bg-accent-warm/[0.02] blur-3xl pointer-events-none" />
+
+  <div class="container-main relative z-10">
+    <div class="grid md:grid-cols-2 gap-12 lg:gap-20 items-center min-h-[80vh] md:min-h-[85vh]">
+
+      <!-- LEFT: 看板娘 with mouse parallax -->
+      <div class="flex flex-col items-center">
+        <div class="w-full max-w-lg">
+          <img
+            id="banner-img"
+            src="https://static.zdfmc.net/zdfmc_net/wp-content/uploads/2024/05/zdfmc_net_banner1-scaled-e1715967952746.jpg"
+            alt="zdfmc.net 看板娘"
+            class="w-full transition-transform duration-700 ease-out"
+            loading="eager"
+          />
+        </div>
+        <p class="text-gray-300 text-xs mt-4">ill. by Patchouli @ zdfmc.net</p>
+      </div>
+
+      <!-- RIGHT: Intro -->
+      <div class="flex flex-col justify-center lg:pr-8">
+        <h2 class="text-3xl md:text-4xl lg:text-5xl font-display font-bold leading-tight tracking-tight mb-6">
+          <div class="text-text-primary">什么是 </div>
+          <div><span class="text-gradient">zdfmc.net</span><span class="text-text-primary">?</span><span id="tw-cursor" class="text-accent">|</span></div>
+        </h2>
+
+        <div class="space-y-4 text-text-secondary leading-relaxed text-sm md:text-base max-w-md">
+          <p>
+            全称<strong class="text-text-primary font-semibold">周大服 Minecraft 社群</strong>。原为几个高考结束无所事事的逗比运行 4 周目的 Minecraft 服务器，现已转为性趣很广泛的综合性研究机构。
+          </p>
+          <p>
+            在线游戏主要包含 <span class="font-medium text-text-primary/80">Minecraft</span>、<span class="font-medium text-text-primary/80">Left 4 Dead 2</span>、<span class="font-medium text-text-primary/80">日式立直麻将</span>、<span class="font-medium text-text-primary/80">100% Orange Juice</span> 等。目前已持续 <span class="text-accent font-semibold">12</span> 个周目，成员分布世界各地。
+          </p>
+        </div>
+
+        <p class="text-text-muted text-xs italic mt-5">&mdash; yuge</p>
+
+        <div class="flex gap-8 mt-8 pt-8 border-t border-gray-100">
+          <div><div class="text-2xl font-black text-text-primary">2012<span class="text-accent">.</span>6</div><div class="text-text-muted text-xs mt-0.5 uppercase tracking-widest">起始于</div></div>
+          <div><div class="text-2xl font-black text-text-primary">20<span class="text-accent-warm">+</span></div><div class="text-text-muted text-xs mt-0.5 uppercase tracking-widest">活跃人数</div></div>
+          <div><div class="text-2xl font-black text-text-primary">12<span class="text-accent">周目</span></div><div class="text-text-muted text-xs mt-0.5 uppercase tracking-widest">已持续</div></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="h-24 bg-gradient-to-b from-white to-surface" />
+</section>
+
+<script>
+  // Cursor blink
+  const cursor = document.getElementById('tw-cursor')!;
+  let blink = true;
+  setInterval(() => { blink = !blink; cursor.style.opacity = blink ? '1' : '0'; }, 800);
+
+  // Banner parallax
+  const banner = document.getElementById('banner-img')!;
+  const hero = document.getElementById('hero-section')!;
+  let targetX = 0, targetY = 0, currentX = 0, currentY = 0;
+
+  hero.addEventListener('mousemove', (e: MouseEvent) => {
+    const rect = hero.getBoundingClientRect();
+    targetX = ((e.clientX - rect.left) / rect.width - 0.5) * 16;
+    targetY = ((e.clientY - rect.top) / rect.height - 0.5) * 12;
+  });
+  hero.addEventListener('mouseleave', () => { targetX = 0; targetY = 0; });
+
+  function animateParallax() {
+    currentX += (targetX - currentX) * 0.06;
+    currentY += (targetY - currentY) * 0.06;
+    banner.style.transform = `translate(${currentX}px,${currentY}px)`;
+    requestAnimationFrame(animateParallax);
+  }
+  requestAnimationFrame(animateParallax);
+</script>
+

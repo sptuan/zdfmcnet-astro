@@ -1,0 +1,57 @@
+---
+const navItems = [
+  { label: '信息集合', href: '/%E2%80%BB%E5%91%A8%E5%A4%A7%E6%9C%8D%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%BB%84%E7%9A%84%E4%BF%A1%E6%81%AF%E9%9B%86%E5%90%88' },
+  { label: '新鲜事儿', href: '/p/category/news' },
+  { label: '完结归档', href: '/p/category/end' },
+  { label: '发展历程', href: '/p/category/history' },
+  { label: '微信号推送', href: '/p/category/%E5%BE%AE%E4%BF%A1%E5%8F%B7%E6%8E%A8%E9%80%81' },
+];
+---
+
+<nav id="top-nav" class="fixed top-0 left-0 right-0 z-50 transition-all duration-300">
+  <div class="container-main flex items-center justify-between h-16">
+    <a href="/" class="text-lg font-bold text-text-primary hover:text-accent transition-colors tracking-tight">
+      zdfmc.net
+    </a>
+    <div class="hidden md:flex items-center gap-1">
+      {navItems.map(item => (
+        <a href={item.href} class="nav-link px-3 py-2 rounded-lg hover:bg-surface-lighter">
+          {item.label}
+        </a>
+      ))}
+    </div>
+    <button id="mobile-menu-btn" class="md:hidden p-2 text-text-secondary hover:text-text-primary" aria-label="Menu">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="18" y2="18"/>
+      </svg>
+    </button>
+  </div>
+  <div id="mobile-menu" class="md:hidden hidden border-t border-gray-200 bg-white/95 backdrop-blur-lg">
+    <div class="container-main py-4 flex flex-col gap-1">
+      {navItems.map(item => (
+        <a href={item.href} class="block px-4 py-2.5 rounded-lg text-text-secondary hover:text-accent hover:bg-surface-lighter">
+          {item.label}
+        </a>
+      ))}
+    </div>
+  </div>
+</nav>
+<div class="h-16"></div>
+
+<script>
+  const btn = document.getElementById('mobile-menu-btn');
+  const menu = document.getElementById('mobile-menu');
+  btn?.addEventListener('click', () => menu?.classList.toggle('hidden'));
+
+  // Scroll-aware: transparent at top, solid after scroll
+  const nav = document.getElementById('top-nav')!;
+  function updateNav() {
+    if (window.scrollY > 60) {
+      nav.classList.add('bg-white/90', 'backdrop-blur-lg', 'border-b', 'border-gray-200/60');
+    } else {
+      nav.classList.remove('bg-white/90', 'backdrop-blur-lg', 'border-b', 'border-gray-200/60');
+    }
+  }
+  window.addEventListener('scroll', updateNav, { passive: true });
+  updateNav();
+</script>

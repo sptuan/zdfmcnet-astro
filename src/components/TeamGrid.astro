@@ -1,0 +1,41 @@
+---
+const members = [
+  { name: 'SPtuan',       role: '管理/维护/创世神',                                       img: 'https://static.zdfmc.net/zdfmc_net/wp-content/uploads/2016/03/QQ图片20160314230403-1-150x150.jpg' },
+  { name: 'Diablo',       role: '//set 0 大神 / 每个周目都参与的创世神',                    img: 'https://static.zdfmc.net/zdfmc_net/wp-content/uploads/2016/03/QQ图片201603142308311-1-150x150.jpg' },
+  { name: 'laoB',         role: '疯狂采矿掌握核心资源的矿老板',                               img: 'https://static.zdfmc.net/zdfmc_net/wp-content/uploads/2016/03/QQ图片20160314230319-1-150x150.jpg' },
+  { name: 'YUGE',         role: '至始自终的建筑师 / 蜜汁毅力',                               img: 'https://static.zdfmc.net/zdfmc_net/wp-content/uploads/2016/03/QQ截图20160314232026-1-150x150.png' },
+  { name: 'Sang',         role: '空岛创世神 / 服群鸽王',                                    img: 'https://static.zdfmc.net/zdfmc_net/wp-content/uploads/2016/05/18754573799582E5C626A2103AC2EF46C327549EE4-150x150.jpg' },
+  { name: 'brotherbiao',  role: 'PVE日常毕业养老',                                          img: 'https://static.zdfmc.net/zdfmc_net/wp-content/uploads/2016/05/1040419327A74778968DAF710FD72943C7DF3AE9C6-150x150.jpg' },
+  { name: '渐娘',          role: '每日求生日常',                                             img: 'https://static.zdfmc.net/zdfmc_net/wp-content/uploads/2016/05/28258864698CD8A7F02FFFB12039994D73AE21B1C1-150x150.jpg' },
+  { name: 'Patchouli',    role: '画师 / 看板娘创造者',                                      img: 'https://static.zdfmc.net/zdfmc_net/wp-content/uploads/2016/05/4956192469A6EE3AFF473F8CABA0113AEC7649FDF-150x150.jpg' },
+  { name: 'SnactZ',       role: 'L4D2女人狂笑 / 守望大手子',                                img: 'https://static.zdfmc.net/zdfmc_net/wp-content/uploads/2019/10/4966140754C97AC16FF84D41B970C83606109FE51-150x150.jpg' },
+  { name: '老连',          role: '整个楼都是他出资建的',                                     img: 'https://static.zdfmc.net/zdfmc_net/wp-content/uploads/2019/10/62675575002058A22AEA61B26CAAAE1A94E251EF6-150x150.jpg' },
+  { name: 'FortiS93l',    role: 'base北京 / 经济实力不必跟随马云修福报',                     img: 'https://static.zdfmc.net/zdfmc_net/wp-content/uploads/2019/10/90719326199038FA09EEB6CB9F716A76F1B6251DB-150x150.jpg' },
+  { name: 'Fandy666',     role: '首席计算机专家 / 湾区定居不知996为何物',                    img: 'https://static.zdfmc.net/zdfmc_net/wp-content/uploads/2019/10/30252567191054608BCFD27C5AAC87DAD5B7FD0A2-150x150.jpg' },
+];
+---
+
+<section id="team" class="section-padding bg-surface-lighter/50">
+  <div class="container-main">
+    <div class="text-center mb-12">
+      <h2 class="text-2xl md:text-3xl font-display font-bold text-text-primary">创世神</h2>
+    </div>
+
+    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6 lg:gap-8">
+      {members.map(member => (
+        <div class="text-center group">
+          <div class="relative mx-auto mb-3 w-20 h-20 md:w-24 md:h-24 rounded-full overflow-hidden ring-2 ring-gray-200 group-hover:ring-accent/60 transition-all duration-300">
+            <img
+              src={member.img}
+              alt={member.name}
+              class="w-full h-full object-cover"
+              loading="lazy"
+            />
+          </div>
+          <h3 class="text-text-primary text-sm font-semibold mb-1">{member.name}</h3>
+          <p class="text-text-muted text-xs leading-relaxed line-clamp-2">{member.role}</p>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>

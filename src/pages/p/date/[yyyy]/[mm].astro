@@ -1,0 +1,52 @@
+---
+import BaseLayout from '../../../../layouts/BaseLayout.astro';
+import PostCard from '../../../../components/PostCard.astro';
+import dateIndex from '../../../../data/date_index.json';
+import postsData from '../../../../data/wordpress_data.json';
+
+export function getStaticPaths() {
+  return Object.keys(dateIndex).map((ym) => {
+    const [yyyy, mm] = ym.split('-');
+    return {
+      params: { yyyy, mm },
+      props: { yyyy, mm, ym },
+    };
+  });
+}
+
+const { yyyy, mm, ym } = Astro.props;
+
+const postIds = (dateIndex as any)[ym] || [];
+const datePosts = postIds
+  .map((pid: number) => postsData.posts.find((p: any) => p.id === pid))
+  .filter(Boolean)
+  .sort((a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime());
+
+const year = parseInt(yyyy);
+const month = parseInt(mm);
+const monthName = `${year}年${month}月`;
+---
+
+<BaseLayout title={`${monthName} 归档 - zdfmc.net`}>
+  <div class="container-main py-12 md:py-20">
+    <header class="mb-12">
+      <h1 class="text-3xl md:text-4xl font-display font-bold text-text-primary mb-2">
+        {monthName} 归档
+      </h1>
+      <p class="text-text-muted">{datePosts.length} 篇文章</p>
+    </header>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+      {datePosts.map((post: any) => (
+        <PostCard
+          id={post.id}
+          title={post.title}
+          date={post.date}
+          excerpt={post.excerpt}
+          categories={post.categories?.map((c: any) => c.name)}
+          thumbnail={(postsData.thumbnails as any)[String(post.id)] || undefined}
+        />
+      ))}
+    </div>
+  </div>
+</BaseLayout>

@@ -1,0 +1,44 @@
+---
+export interface Props {
+  title?: string;
+  subtitle?: string;
+}
+
+const { title, subtitle } = Astro.props;
+---
+
+<section class="relative overflow-hidden min-h-[70vh] flex items-center justify-center">
+  <!-- Background gradient -->
+  <div class="absolute inset-0 bg-gradient-to-b from-surface via-surface to-surface-light" />
+
+  <!-- Decorative blobs -->
+  <div class="absolute top-1/4 -left-32 w-96 h-96 bg-accent/5 rounded-full blur-3xl" />
+  <div class="absolute bottom-1/4 -right-32 w-96 h-96 bg-accent-warm/5 rounded-full blur-3xl" />
+
+  <!-- Grid pattern overlay -->
+  <div class="absolute inset-0 opacity-[0.03]"
+       style="background-image: radial-gradient(circle at 1px 1px, white 1px, transparent 0); background-size: 40px 40px;">
+  </div>
+
+  <div class="container-main relative z-10 text-center py-20">
+    <!-- Banner image (if available) -->
+    <div class="mb-8">
+      <img
+        src="https://static.zdfmc.net/zdfmc_net/wp-content/uploads/2024/05/zdfmc_net_banner1-scaled-e1715967952746.jpg"
+        alt="zdfmc.net banner"
+        class="w-full max-w-3xl mx-auto rounded-2xl shadow-2xl shadow-accent/10"
+        loading="eager"
+      />
+    </div>
+
+    <h1 class="text-3xl md:text-5xl lg:text-6xl xl:text-7xl font-black tracking-tight leading-none mb-4">
+      <span class="text-white">{title || 'zdfmc.net'}</span>
+    </h1>
+    {subtitle && (
+      <p class="text-text-secondary text-base md:text-lg max-w-lg mx-auto leading-relaxed mt-4">
+        {subtitle}
+      </p>
+    )}
+    <p class="text-text-muted/50 text-xs mt-6">ill. by Patchouli @ zdfmc.net</p>
+  </div>
+</section>
