@@ -63,7 +63,7 @@ const formattedDate = new Date(date).toLocaleDateString('zh-CN', {
       </div>
 
       <!-- Title -->
-      <h1 class="text-3xl md:text-4xl lg:text-5xl font-bold text-text-primary leading-tight mb-6 max-w-article mx-auto">
+      <h1 class="text-2xl md:text-3xl lg:text-4xl font-bold text-text-primary leading-snug mb-10 max-w-article mx-auto">
         {title}
       </h1>
 
@@ -72,7 +72,7 @@ const formattedDate = new Date(date).toLocaleDateString('zh-CN', {
         TOC is built client-side; this details element provides the shell
         and is hidden on desktop
       */}
-      <details class="article-toc-mobile max-w-article mx-auto">
+      <details class="article-toc-mobile max-w-article mx-auto" id="toc-mobile">
         <summary>目录</summary>
         <nav id="toc-mobile-list"></nav>
       </details>
@@ -96,7 +96,7 @@ const formattedDate = new Date(date).toLocaleDateString('zh-CN', {
     </div>
 
     <!-- RIGHT SIDEBAR: TOC, desktop only -->
-    <aside class="article-toc">
+    <aside class="article-toc" id="toc-sidebar">
       <div class="article-toc__title">目录</div>
       <nav>
         <ul class="article-toc__list" id="toc-list"></ul>
@@ -107,13 +107,50 @@ const formattedDate = new Date(date).toLocaleDateString('zh-CN', {
 </BaseLayout>
 
 <script>
+  // Auto-space between CJK and Latin characters
+  function autoSpace() {
+    const article = document.getElementById('article-body');
+    if (!article) return;
+
+    const reCJK = /([一-鿿㐀-䶿　-〿＀-￯])([a-zA-Z0-9$@&*+\-=_|\\\/<>~%^])/g;
+    const reLatin = /([a-zA-Z0-9$@&*+\-=_|\\\/<>~%^])([一-鿿㐀-䶿　-〿＀-￯])/g;
+
+    const walker = document.createTreeWalker(article, NodeFilter.SHOW_TEXT, {
+      acceptNode(node) {
+        if (!node.textContent || !node.textContent.trim()) return NodeFilter.FILTER_REJECT;
+        const parent = node.parentElement;
+        if (!parent) return NodeFilter.FILTER_REJECT;
+        const tag = parent.tagName.toLowerCase();
+        if (tag === 'code' || tag === 'pre' || tag === 'script' || tag === 'style') return NodeFilter.FILTER_REJECT;
+        return NodeFilter.FILTER_ACCEPT;
+      }
+    });
+
+    let node;
+    const nodes: Text[] = [];
+    while (node = walker.nextNode()) nodes.push(node as Text);
+
+    nodes.forEach(n => {
+      let text = n.textContent || '';
+      let changed = false;
+      const newText = text
+        .replace(reCJK, (_, cjk, latin) => { changed = true; return `${cjk} ${latin}`; })
+        .replace(reLatin, (_, latin, cjk) => { changed = true; return `${latin} ${cjk}`; });
+      if (changed) n.textContent = newText;
+    });
+  }
+
   // Build table of contents from article headings
   function buildTOC() {
     const article = document.getElementById('article-body');
     if (!article) return;
 
     const headings = article.querySelectorAll('h2, h3');
-    if (headings.length < 2) return;
+    if (headings.length < 2) {
+      document.getElementById('toc-sidebar')?.classList.add('hidden');
+      document.getElementById('toc-mobile')?.classList.add('hidden');
+      return;
+    }
 
     const tocList = document.getElementById('toc-list');
     const tocMobileList = document.getElementById('toc-mobile-list');
@@ -171,5 +208,6 @@ const formattedDate = new Date(date).toLocaleDateString('zh-CN', {
     headings.forEach(h => observer.observe(h));
   }
 
+  autoSpace();
   buildTOC();
 </script>
