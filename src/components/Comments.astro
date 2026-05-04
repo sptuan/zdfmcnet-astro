@@ -12,7 +12,7 @@ const comments: any[] = (commentsData.comments as any)[String(postId)] || [];
 {comments.length > 0 && (
   <section class="mt-16 pt-10 border-t border-gray-200">
     <h2 class="text-xl font-bold text-text-primary mb-6">
-      评论 ({comments.length})
+      历史评论 ({comments.length})
     </h2>
     <div class="space-y-6">
       {comments.map((c: any) => (

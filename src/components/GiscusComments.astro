@@ -1,0 +1,26 @@
+<section class="giscus-comments mt-12 pt-10 border-t border-gray-200">
+  <h2 class="text-xl font-bold text-text-primary mb-6">参与讨论</h2>
+  <div class="giscus" />
+</section>
+
+<script is:inline>
+  if (!document.querySelector('script[src*="giscus.app"]')) {
+    const script = document.createElement('script');
+    script.src = 'https://giscus.app/client.js';
+    script.setAttribute('data-repo', 'sptuan/zdfmcnet-astro');
+    script.setAttribute('data-repo-id', 'R_kgDOSTtPTg');
+    script.setAttribute('data-category', 'Announcements');
+    script.setAttribute('data-category-id', 'DIC_kwDOSTtPTs4C8T5A');
+    script.setAttribute('data-mapping', 'pathname');
+    script.setAttribute('data-strict', '0');
+    script.setAttribute('data-reactions-enabled', '1');
+    script.setAttribute('data-emit-metadata', '0');
+    script.setAttribute('data-input-position', 'bottom');
+    script.setAttribute('data-theme', 'preferred_color_scheme');
+    script.setAttribute('data-lang', 'zh-CN');
+    script.setAttribute('crossorigin', 'anonymous');
+    script.async = true;
+    const container = document.querySelector('.giscus');
+    if (container) container.appendChild(script);
+  }
+</script>
