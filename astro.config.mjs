@@ -1,14 +1,21 @@
 import { defineConfig } from 'astro/config';
 import tailwind from '@astrojs/tailwind';
 
+import cloudflare from "@astrojs/cloudflare";
+
 export default defineConfig({
   site: 'https://zdfmc.net',
+
   integrations: [
     tailwind(),
   ],
-  output: 'static',
+
+  output: "hybrid",
+
   build: {
     format: 'directory',
   },
+
   trailingSlash: 'never',
+  adapter: cloudflare()
 });
