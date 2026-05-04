@@ -21,9 +21,16 @@ export default {
         },
       },
       fontFamily: {
-        sans: ['"Noto Sans SC"', '"Inter"', 'system-ui', '-apple-system', 'sans-serif'],
-        display: ['"Noto Serif SC"', '"Noto Sans SC"', 'serif'],
-        mono: ['"JetBrains Mono"', '"Fira Code"', 'monospace'],
+        sans: ['"PingFang SC"', '"Microsoft YaHei"', '"Hiragino Sans GB"', '"WenQuanYi Micro Hei"', 'system-ui', '-apple-system', 'sans-serif'],
+        display: ['"PingFang SC"', '"Microsoft YaHei"', '"Hiragino Sans GB"', 'system-ui', 'sans-serif'],
+        serif: ['"Noto Serif SC"', '"STSong"', '"Songti SC"', '"SimSun"', '"Source Han Serif SC"', 'serif'],
+        mono: ['"JetBrains Mono"', '"Fira Code"', '"SF Mono"', 'monospace'],
+      },
+      fontSize: {
+        'article-body': ['1.0625rem', { lineHeight: '1.85' }],
+      },
+      maxWidth: {
+        article: '40rem',
       },
     },
   },

@@ -1,9 +1,9 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import Comments from '../components/Comments.astro';
 import pagesData from '../data/wordpress_data.json';
 
 export function getStaticPaths() {
-  // Generate paths for all published pages with slugs
   return pagesData.pages
     .filter((p: any) => p.slug && p.title !== '示例页面' && p.title !== 'Sample Page')
     .map((page: any) => ({
@@ -18,18 +18,13 @@ const { page } = Astro.props;
 <BaseLayout title={page.title}>
   <div class="container-main py-12 md:py-20">
     <article>
-      <h1 class="text-3xl md:text-4xl font-display font-bold text-text-primary mb-8">
+      <h1 class="text-3xl md:text-4xl font-bold text-text-primary mb-8 max-w-article mx-auto">
         {page.title}
       </h1>
-      <div class="prose prose-lg max-w-none
-        prose-headings:text-text-primary prose-headings:font-display
-        prose-a:text-accent prose-a:no-underline hover:prose-a:text-accent-warm
-        prose-img:rounded-xl prose-img:shadow-lg
-        prose-blockquote:border-accent prose-blockquote:text-text-secondary
-        prose-hr:border-gray-200
-      ">
+      <div class="prose-article">
         <Fragment set:html={page.content} />
       </div>
     </article>
+    <Comments postId={page.id} />
   </div>
 </BaseLayout>

@@ -19,52 +19,157 @@ const formattedDate = new Date(date).toLocaleDateString('zh-CN', {
 ---
 
 <BaseLayout title={title}>
-  <article class="container-main py-12 md:py-20">
-    <header class="mb-10">
+  <div class="article-layout py-12 md:py-20">
+
+    <!-- LEFT SIDEBAR: sticky, desktop only -->
+    <aside class="article-meta">
+      <div class="article-meta__avatar">周</div>
+      <div class="article-meta__author">周大服小编114514号</div>
+      <time datetime={date} class="article-meta__date">{formattedDate}</time>
+
       {categories && categories.length > 0 && (
-        <div class="flex flex-wrap gap-2 mb-4">
-          {categories.map(cat => (
-            <a href={`/p/category/${cat}`}
-               class="text-xs font-medium px-3 py-1 rounded-full bg-accent/10 text-accent hover:bg-accent/20 transition-colors">
-              {cat}
-            </a>
-          ))}
-        </div>
+        <>
+          <div class="article-meta__section-title">分类</div>
+          <div class="article-meta__categories">
+            {categories.map(cat => (
+              <a href={`/p/category/${cat}`} class="article-meta__category">{cat}</a>
+            ))}
+          </div>
+        </>
       )}
-      <h1 class="text-3xl md:text-4xl lg:text-5xl font-display font-bold text-text-primary leading-tight">
+
+      {tags && tags.length > 0 && (
+        <>
+          <div class="article-meta__section-title">标签</div>
+          <div class="article-meta__tags">
+            {tags.map(tag => (
+              <span class="article-meta__tag">#{tag}</span>
+            ))}
+          </div>
+        </>
+      )}
+    </aside>
+
+    <!-- CENTER: article content -->
+    <div>
+      <!-- Mobile/tablet: inline meta bar -->
+      <div class="article-meta-inline">
+        <div class="article-meta__avatar">周</div>
+        <span class="article-meta__author">周大服小编114514号</span>
+        <time datetime={date}>{formattedDate}</time>
+        {categories && categories.length > 0 && (
+          <span>{categories.join(' · ')}</span>
+        )}
+      </div>
+
+      <!-- Title -->
+      <h1 class="text-3xl md:text-4xl lg:text-5xl font-bold text-text-primary leading-tight mb-6 max-w-article mx-auto">
         {title}
       </h1>
-      <time datetime={date} class="block mt-4 text-text-muted text-sm">
-        {formattedDate}
-      </time>
-    </header>
 
-    {thumbnail && (
-      <figure class="mb-10 -mx-4 md:mx-0">
-        <img src={thumbnail} alt={title} class="w-full rounded-xl shadow-md" loading="lazy" />
-      </figure>
-    )}
+      <!-- Mobile/tablet: collapsible TOC -->
+      {/*
+        TOC is built client-side; this details element provides the shell
+        and is hidden on desktop
+      */}
+      <details class="article-toc-mobile max-w-article mx-auto">
+        <summary>目录</summary>
+        <nav id="toc-mobile-list"></nav>
+      </details>
 
-    <div class="prose prose-lg max-w-none
-      prose-headings:text-text-primary prose-headings:font-display
-      prose-a:text-accent prose-a:no-underline hover:prose-a:text-accent-warm
-      prose-img:rounded-xl prose-img:shadow-sm
-      prose-blockquote:border-accent prose-blockquote:text-text-secondary
-      prose-code:text-accent prose-code:bg-surface-lighter prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded
-      prose-pre:bg-surface-lighter prose-pre:border prose-pre:border-gray-200
-      prose-hr:border-gray-200
-    ">
-      <slot />
+      <!-- Featured image — restrained -->
+      {thumbnail && (
+        <figure class="article-thumbnail">
+          <img src={thumbnail} alt={title} loading="lazy" />
+        </figure>
+      )}
+
+      <!-- Article body -->
+      <div class="prose-article" id="article-body">
+        <slot />
+      </div>
+
+      <!-- Comments -->
+      <div class="max-w-article mx-auto">
+        <Comments postId={postId} />
+      </div>
     </div>
 
-    {tags && tags.length > 0 && (
-      <div class="mt-12 flex flex-wrap gap-2">
-        {tags.map(tag => (
-          <span class="text-xs px-2 py-1 rounded bg-surface-lighter text-text-muted">#{tag}</span>
-        ))}
-      </div>
-    )}
+    <!-- RIGHT SIDEBAR: TOC, desktop only -->
+    <aside class="article-toc">
+      <div class="article-toc__title">目录</div>
+      <nav>
+        <ul class="article-toc__list" id="toc-list"></ul>
+      </nav>
+    </aside>
 
-    <Comments postId={postId} />
-  </article>
+  </div>
 </BaseLayout>
+
+<script>
+  // Build table of contents from article headings
+  function buildTOC() {
+    const article = document.getElementById('article-body');
+    if (!article) return;
+
+    const headings = article.querySelectorAll('h2, h3');
+    if (headings.length < 2) return;
+
+    const tocList = document.getElementById('toc-list');
+    const tocMobileList = document.getElementById('toc-mobile-list');
+    if (!tocList && !tocMobileList) return;
+
+    // Build TOC HTML and assign heading IDs
+    const items: Array<{ id: string; text: string; level: number; el: Element }> = [];
+
+    headings.forEach((h, i) => {
+      const id = h.id || `heading-${i}`;
+      if (!h.id) h.id = id;
+      items.push({
+        id,
+        text: h.textContent || '',
+        level: parseInt(h.tagName[1]),
+        el: h,
+      });
+    });
+
+    const html = items.map(item =>
+      `<li class="article-toc__item${item.level === 3 ? ' article-toc__item--h3' : ''}">
+        <a href="#${item.id}">${item.text}</a>
+      </li>`
+    ).join('');
+
+    if (tocList) tocList.innerHTML = html;
+    if (tocMobileList) {
+      const ul = document.createElement('ul');
+      ul.className = 'article-toc__list';
+      ul.innerHTML = html;
+      tocMobileList.innerHTML = '';
+      tocMobileList.appendChild(ul);
+    }
+
+    // IntersectionObserver to highlight active heading
+    const tocItems = document.querySelectorAll('.article-toc__item');
+    if (tocItems.length === 0) return;
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        const idx = items.findIndex(it => it.el === entry.target);
+        if (idx === -1) return;
+
+        if (entry.isIntersecting) {
+          tocItems.forEach(t => t.classList.remove('article-toc__item--active'));
+          // Highlight all matching TOC items (desktop + mobile)
+          const targetId = items[idx].id;
+          document.querySelectorAll(`.article-toc__item a[href="#${targetId}"]`).forEach(a => {
+            a.closest('.article-toc__item')?.classList.add('article-toc__item--active');
+          });
+        }
+      });
+    }, { rootMargin: '-80px 0px -70% 0px' });
+
+    headings.forEach(h => observer.observe(h));
+  }
+
+  buildTOC();
+</script>
