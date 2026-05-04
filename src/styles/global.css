@@ -210,13 +210,7 @@
     width: 48px;
     height: 48px;
     border-radius: 50%;
-    background: linear-gradient(135deg, #0891b2, #e55c4a);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #fff;
-    font-size: 1.25rem;
-    font-weight: 700;
+    object-fit: cover;
     margin-bottom: 0.75rem;
   }
 
@@ -230,8 +224,6 @@
     @apply text-text-muted;
     font-size: 0.8125rem;
     margin-bottom: 1rem;
-    padding-bottom: 1rem;
-    border-bottom: 1px solid #e5e7eb;
   }
 
   .article-meta__section-title {
@@ -368,7 +360,6 @@
     .article-meta-inline .article-meta__avatar {
       width: 32px;
       height: 32px;
-      font-size: 0.875rem;
       margin-bottom: 0;
     }
 
